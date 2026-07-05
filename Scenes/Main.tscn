@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://dqsvshqw0k0ng"]
+
+[ext_resource type="PackedScene" uid="uid://ctmhphgr3lmwl" path="res://Scenes/block.tscn" id="2_idj7w"]
+[ext_resource type="PackedScene" uid="uid://c2861fx0yjmce" path="res://Scenes/player_character.tscn" id="2_kln2b"]
+
+[node name="Main" type="Node" unique_id=1029569620]
+
+[node name="Block" parent="." unique_id=537017329 instance=ExtResource("2_idj7w")]
+position = Vector2(-4573, 8257)
+
+[node name="Block2" parent="." unique_id=546167800 instance=ExtResource("2_idj7w")]
+position = Vector2(-335, 9043)
+
+[node name="Block3" parent="." unique_id=934998312 instance=ExtResource("2_idj7w")]
+position = Vector2(4263, 9712)
+
+[node name="PlayerCharacter" parent="." unique_id=930806669 instance=ExtResource("2_kln2b")]
+
+[node name="Block4" parent="." unique_id=1837513501 instance=ExtResource("2_idj7w")]
+position = Vector2(11791, 8491)
+
+[node name="Block5" parent="." unique_id=91174572 instance=ExtResource("2_idj7w")]
+position = Vector2(19001, 7413)
+
+[node name="Block6" parent="." unique_id=1669076454 instance=ExtResource("2_idj7w")]
+position = Vector2(-12852, 10754)
+
+[node name="Block7" parent="." unique_id=1081042278 instance=ExtResource("2_idj7w")]
+position = Vector2(33144, 5394)
+
+[node name="Block8" parent="." unique_id=582446070 instance=ExtResource("2_idj7w")]
+position = Vector2(42888, 2780)
+
+[node name="Block9" parent="." unique_id=1765611387 instance=ExtResource("2_idj7w")]
+position = Vector2(38622, 8994)
+
+[node name="Block10" parent="." unique_id=1775387414 instance=ExtResource("2_idj7w")]
+position = Vector2(26149, 6932)

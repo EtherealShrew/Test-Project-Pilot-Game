@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dqsvshqw0k0ng"]
+
+[ext_resource type="PackedScene" uid="uid://ctmhphgr3lmwl" path="res://Scenes/block.tscn" id="2_idj7w"]
+[ext_resource type="PackedScene" uid="uid://nqcpiqu8d65u" path="res://Scenes/player_ship_v_2.tscn" id="2_kln2b"]
+[ext_resource type="PackedScene" uid="uid://bb0v7lr0pox3m" path="res://Scenes/player_bullet.tscn" id="3_kln2b"]
+
+[node name="Main" type="Node"]
+
+[node name="Block" parent="." instance=ExtResource("2_idj7w")]
+position = Vector2(-4608, 8309)
+
+[node name="Block" parent="Block" instance=ExtResource("2_idj7w")]
+position = Vector2(6080, 1)
+
+[node name="Block" parent="Block/Block" instance=ExtResource("2_idj7w")]
+position = Vector2(5933, 2)
+
+[node name="PlayerShipV2" parent="." instance=ExtResource("2_kln2b")]
+position = Vector2(454, 318)
+
+[node name="PlayerBullet" parent="." instance=ExtResource("3_kln2b")]
+position = Vector2(2176, 516)

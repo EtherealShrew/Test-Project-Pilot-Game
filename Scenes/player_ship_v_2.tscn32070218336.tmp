@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3 uid="uid://nqcpiqu8d65u"]
+
+[ext_resource type="Script" uid="uid://dxgkkfox457xt" path="res://Scenes/ShipController.gd" id="1_v5y22"]
+[ext_resource type="PackedScene" uid="uid://bb0v7lr0pox3m" path="res://Scenes/player_bullet.tscn" id="2_j3vta"]
+[ext_resource type="Texture2D" uid="uid://c7ud5g2v48lr2" path="res://Assets/PlayerTemp.png" id="2_v5y22"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v5y22"]
+size = Vector2(1196, 1204)
+
+[node name="PlayerShipV2" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+script = ExtResource("1_v5y22")
+maxHorzVelocity = 20000.0
+lockedAcceleration = 400.0
+bullet_scene = ExtResource("2_j3vta")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+modulate = Color(0.6886066, 0.23872596, 0.64557093, 1)
+shape = SubResource("RectangleShape2D_v5y22")
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+position = Vector2(42, 0)
+zoom = Vector2(0.05, 0.05)
+process_callback = 0
+limit_enabled = false
+position_smoothing_enabled = true
+drag_left_margin = 0.02
+drag_top_margin = 0.02
+drag_right_margin = 0.02
+drag_bottom_margin = 0.02
+editor_draw_limits = true
+editor_draw_drag_margin = true
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+scale = Vector2(39, 39)
+texture = ExtResource("2_v5y22")
+
+[node name="FiringPoint" type="Node2D" parent="CharacterBody2D"]

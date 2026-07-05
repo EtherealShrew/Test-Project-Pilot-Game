@@ -1,0 +1,67 @@
+[gd_scene load_steps=7 format=3 uid="uid://c2861fx0yjmce"]
+
+[ext_resource type="Script" uid="uid://pu36a3u1cglv" path="res://Scripts/CharacterController.gd" id="1_cmdk4"]
+[ext_resource type="Texture2D" uid="uid://vev4fm0ac4sl" path="res://Assets/CharacterTemp.png" id="2_cmdk4"]
+[ext_resource type="Script" uid="uid://ydhoxgpbd8n3" path="res://Scenes/idle.gd" id="2_o0f8b"]
+[ext_resource type="Script" uid="uid://f76h0uod81o4" path="res://Scripts/StateMachine.gd" id="2_wko77"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cmdk4"]
+size = Vector2(780, 594)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cmdk4"]
+radius = 402.4972
+
+[node name="PlayerCharacter" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+scale = Vector2(0.5, 1)
+platform_on_leave = 1
+script = ExtResource("1_cmdk4")
+walkingSpeed = 2750.0
+airSpeed = 1500.0
+jumpVelocity = -4000.0
+baseGravity = 8.0
+apexGravity = 5.0
+fallGravity = 20.0
+walkingAcceleration = 350.0
+airAcceleration = 200.0
+riseTime = 0.45
+apexTime = 0.25
+coyoteTime = 0.1
+minCoyoteVelocity = 1.0
+
+[node name="StateMachine" type="Node" parent="CharacterBody2D"]
+script = ExtResource("2_wko77")
+
+[node name="Idle" type="Node" parent="CharacterBody2D/StateMachine"]
+script = ExtResource("2_o0f8b")
+
+[node name="Jump" type="Node" parent="CharacterBody2D/StateMachine"]
+
+[node name="Walk" type="Node" parent="CharacterBody2D/StateMachine"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(-2, -102)
+shape = SubResource("RectangleShape2D_cmdk4")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(0, 200)
+scale = Vector2(1, 0.5)
+shape = SubResource("CircleShape2D_cmdk4")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+scale = Vector2(25, 25)
+texture = ExtResource("2_cmdk4")
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+zoom = Vector2(0.1, 0.1)
+
+[node name="JumpTimer" type="Timer" parent="CharacterBody2D"]
+process_callback = 0
+
+[node name="CoyoteTimer" type="Timer" parent="CharacterBody2D"]
+process_callback = 0
+one_shot = true
+
+[connection signal="timeout" from="CharacterBody2D/JumpTimer" to="CharacterBody2D" method="_on_jump_timer_timeout"]
+[connection signal="timeout" from="CharacterBody2D/CoyoteTimer" to="CharacterBody2D" method="_on_coyote_timer_timeout"]

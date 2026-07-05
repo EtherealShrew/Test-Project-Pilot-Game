@@ -1,0 +1,45 @@
+[gd_scene load_steps=4 format=3 uid="uid://c2861fx0yjmce"]
+
+[ext_resource type="Script" uid="uid://pu36a3u1cglv" path="res://Scenes/character_body_2d.gd" id="1_cmdk4"]
+[ext_resource type="Texture2D" uid="uid://vev4fm0ac4sl" path="res://Assets/CharacterTemp.png" id="2_cmdk4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cmdk4"]
+size = Vector2(792, 801)
+
+[node name="PlayerCharacter" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+scale = Vector2(0.5, 1)
+platform_on_leave = 1
+script = ExtResource("1_cmdk4")
+walkingSpeed = 2750.0
+airSpeed = 1500.0
+jumpVelocity = -4000.0
+baseGravity = 8.0
+apexGravity = 5.0
+fallGravity = 20.0
+walkingAcceleration = 350.0
+airAcceleration = 200.0
+riseTime = 0.5
+apexTime = 0.25
+coyoteTime = 0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(-4, 0.5)
+shape = SubResource("RectangleShape2D_cmdk4")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+scale = Vector2(25, 25)
+texture = ExtResource("2_cmdk4")
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+zoom = Vector2(0.1, 0.1)
+
+[node name="JumpTimer" type="Timer" parent="CharacterBody2D"]
+process_callback = 0
+
+[node name="CoyoteTimer" type="Timer" parent="CharacterBody2D"]
+process_callback = 0
+
+[connection signal="timeout" from="CharacterBody2D/JumpTimer" to="CharacterBody2D" method="_on_jump_timer_timeout"]
+[connection signal="timeout" from="CharacterBody2D/CoyoteTimer" to="CharacterBody2D" method="_on_coyote_timer_timeout"]

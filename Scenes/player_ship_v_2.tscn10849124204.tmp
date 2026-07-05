@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3 uid="uid://nqcpiqu8d65u"]
+
+[ext_resource type="Texture2D" uid="uid://ck3am25vvq3ts" path="res://Assets/square.jpg" id="1_io52o"]
+[ext_resource type="Script" uid="uid://dxgkkfox457xt" path="res://Scenes/character_body_2d.gd" id="1_v5y22"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v5y22"]
+size = Vector2(1196, 1204)
+
+[node name="PlayerShipV2" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+script = ExtResource("1_v5y22")
+maxHorzVelocity = 20000.0
+lockedAcceleration = 400.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("RectangleShape2D_v5y22")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+texture = ExtResource("1_io52o")
+
+[node name="Camera2D2" type="Camera2D" parent="CharacterBody2D"]
+position = Vector2(42, 0)
+zoom = Vector2(0.01, 0.01)
+process_callback = 0
+limit_enabled = false
+position_smoothing_enabled = true
+drag_left_margin = 0.02
+drag_top_margin = 0.02
+drag_right_margin = 0.02
+drag_bottom_margin = 0.02
+editor_draw_limits = true
+editor_draw_drag_margin = true

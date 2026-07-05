@@ -1,0 +1,40 @@
+[gd_scene load_steps=4 format=3 uid="uid://bb0v7lr0pox3m"]
+
+[ext_resource type="Script" uid="uid://b84sfhgax85l6" path="res://Scripts/PlayerBulletController.gd" id="1_3m2mg"]
+[ext_resource type="Texture2D" uid="uid://biftyr3fqe7e3" path="res://Assets/BulletTemp.png" id="1_bg8x2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bg8x2"]
+size = Vector2(1200.0001, 1200.0001)
+
+[node name="PlayerBullet" type="CharacterBody2D"]
+position = Vector2(2, 1)
+scale = Vector2(0.25, 0.25)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_3m2mg")
+bulletSpeed = 100000.0
+terminalVelocity = 25000.0
+gravity = 500.0
+
+[node name="Node2D" type="Area2D" parent="."]
+collision_layer = 2
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Node2D"]
+scale = Vector2(0.9999998, 0.9999998)
+shape = SubResource("RectangleShape2D_bg8x2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+scale = Vector2(200, 200)
+texture = ExtResource("1_bg8x2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(0.9999998, 0.9999998)
+shape = SubResource("RectangleShape2D_bg8x2")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.25
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -1,0 +1,100 @@
+[gd_scene load_steps=9 format=3 uid="uid://c2861fx0yjmce"]
+
+[ext_resource type="Script" uid="uid://pu36a3u1cglv" path="res://Scripts/CharacterController.gd" id="1_cmdk4"]
+[ext_resource type="Texture2D" uid="uid://vev4fm0ac4sl" path="res://Assets/CharacterTemp.png" id="2_cmdk4"]
+[ext_resource type="Script" uid="uid://f76h0uod81o4" path="res://Scripts/StateMachine.gd" id="2_wko77"]
+[ext_resource type="Script" uid="uid://c7datro7dhdm2" path="res://Scenes/ship_state.gd" id="4_ons1q"]
+[ext_resource type="Script" uid="uid://ydhoxgpbd8n3" path="res://Scenes/character_state.gd" id="4_pb3n0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cmdk4"]
+size = Vector2(780, 594)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cmdk4"]
+radius = 402.4972
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pb3n0"]
+size = Vector2(520, 532.5)
+
+[node name="PlayerCharacter" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+scale = Vector2(0.5, 1)
+platform_on_leave = 1
+script = ExtResource("1_cmdk4")
+
+[node name="StateMachine" type="Node" parent="CharacterBody2D" node_paths=PackedStringArray("starting_state", "character_state", "ship_state")]
+script = ExtResource("2_wko77")
+starting_state = NodePath("Character")
+character_state = NodePath("Character")
+ship_state = NodePath("Ship")
+
+[node name="Character" type="Node" parent="CharacterBody2D/StateMachine" node_paths=PackedStringArray("jump_timer", "coyote_timer", "state_machine", "player_sprite", "wall_slide_right", "wall_slide_left")]
+script = ExtResource("4_pb3n0")
+walkingSpeed = 2750.0
+sprintSpeed = 4500.0
+airSpeed = 2750.0
+sprintAirSpeed = 4500.0
+jumpVelocity = -4000.0
+baseGravity = 8.0
+apexGravity = 5.0
+fallGravity = 20.0
+walkingAcceleration = 350.0
+sprintingAcceleration = 650.0
+airAcceleration = 200.0
+riseTime = 0.45
+apexTime = 0.25
+coyoteTime = 0.1
+minCoyoteVelocity = 100.0
+jump_timer = NodePath("../../JumpTimer")
+coyote_timer = NodePath("../../CoyoteTimer")
+state_machine = NodePath("..")
+player_sprite = NodePath("../../Sprite2D")
+wall_slide_right = NodePath("../../WallSlideR")
+wall_slide_left = NodePath("../../WallSlideL")
+
+[node name="Ship" type="Node" parent="CharacterBody2D/StateMachine"]
+script = ExtResource("4_ons1q")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(-2, -102)
+shape = SubResource("RectangleShape2D_cmdk4")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(0, 200)
+scale = Vector2(1, 0.5)
+shape = SubResource("CircleShape2D_cmdk4")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+scale = Vector2(25, 25)
+texture = ExtResource("2_cmdk4")
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+zoom = Vector2(0.1, 0.1)
+
+[node name="JumpTimer" type="Timer" parent="CharacterBody2D"]
+process_callback = 0
+
+[node name="CoyoteTimer" type="Timer" parent="CharacterBody2D"]
+process_callback = 0
+one_shot = true
+
+[node name="WallSlideR" type="Area2D" parent="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 4
+
+[node name="WallSlideCollisionR" type="CollisionShape2D" parent="CharacterBody2D/WallSlideR"]
+position = Vector2(260, -0.5)
+shape = SubResource("RectangleShape2D_pb3n0")
+debug_color = Color(0.8303257, 0.5441133, 0.69206786, 0.41960785)
+
+[node name="WallSlideL" type="Area2D" parent="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 4
+
+[node name="WallSlideCollisionL" type="CollisionShape2D" parent="CharacterBody2D/WallSlideL"]
+position = Vector2(-260, 0.25)
+shape = SubResource("RectangleShape2D_pb3n0")
+debug_color = Color(0.66100144, 0.35112426, 0.51948434, 0.41960785)
+
+[connection signal="timeout" from="CharacterBody2D/JumpTimer" to="CharacterBody2D/StateMachine/Character" method="_on_jump_timer_timeout"]
+[connection signal="timeout" from="CharacterBody2D/CoyoteTimer" to="CharacterBody2D/StateMachine/Character" method="_on_coyote_timer_timeout"]

@@ -1,0 +1,54 @@
+[gd_scene load_steps=4 format=3 uid="uid://wjcd7mwubudi"]
+
+[ext_resource type="Texture2D" uid="uid://ck3am25vvq3ts" path="res://Assets/square.jpg" id="1_6s7s7"]
+[ext_resource type="Script" uid="uid://c2bxoqe504qqx" path="res://Scripts/OldShipController.gd" id="1_fuej1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fuej1"]
+size = Vector2(1200, 1198)
+
+[node name="PlayerShip" type="Node2D"]
+
+[node name="CharacterBody2D" type="RigidBody2D" parent="."]
+position = Vector2(-254, 254)
+gravity_scale = 2.0
+angular_damp = 1.685
+constant_force = Vector2(0, 9800)
+script = ExtResource("1_fuej1")
+thrusterStrength = 2234567.0
+lockedStrength = 1834567.0
+rcsStrength = 1000000.0
+maxSpeed = 25000.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+texture_filter = 1
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_fuej1")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+texture = ExtResource("1_6s7s7")
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+position = Vector2(42, 0)
+zoom = Vector2(0.01, 0.01)
+process_callback = 0
+limit_enabled = false
+position_smoothing_enabled = true
+drag_left_margin = 0.02
+drag_top_margin = 0.02
+drag_right_margin = 0.02
+drag_bottom_margin = 0.02
+editor_draw_limits = true
+editor_draw_drag_margin = true
+
+[node name="Camera2D2" type="Camera2D" parent="CharacterBody2D"]
+position = Vector2(42, 0)
+zoom = Vector2(0.01, 0.01)
+process_callback = 0
+limit_enabled = false
+position_smoothing_enabled = true
+drag_left_margin = 0.02
+drag_top_margin = 0.02
+drag_right_margin = 0.02
+drag_bottom_margin = 0.02
+editor_draw_limits = true
+editor_draw_drag_margin = true

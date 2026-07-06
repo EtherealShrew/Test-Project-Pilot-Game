@@ -5,39 +5,42 @@ var walk_state: PlayerState
 var jump_state: PlayerState
 var fall_state: PlayerState
 
-@export var walkingSpeed: float #
-@export var sprintSpeed: float #
-@export var airSpeed: float #
-@export var sprintAirSpeed: float #
-@export var jumpVelocity: float #
-@export var baseGravity: float #
-@export var apexGravity: float #
-@export var fallGravity: float #
-@export var walkingAcceleration: float #
-@export var sprintingAcceleration: float #
-@export var airAcceleration: float # 
-@export var riseTime: float #
-@export var apexTime: float #
-@export var coyoteTime: float #
-@export var minCoyoteVelocity: float #
+@export var walkingSpeed: float 
+@export var sprintSpeed: float 
+@export var airSpeed: float 
+@export var sprintAirSpeed: float 
+@export var jumpVelocity: float 
+@export var baseGravity: float 
+@export var apexGravity: float 
+@export var fallGravity: float 
+@export var walkingAcceleration: float 
+@export var sprintingAcceleration: float 
+@export var airAcceleration: float 
+@export var riseTime: float 
+@export var apexTime: float 
+@export var coyoteTime: float 
+@export var minCoyoteVelocity: float 
 @export var jump_timer: Timer
 @export var coyote_timer: Timer 
+@export var start_timer: Timer 
 @export var state_machine: Node
 @export var player_sprite: Sprite2D
 @export var wall_slide_right: Area2D
 @export var wall_slide_left: Area2D
 
-var currentAirAcceleration: float # 
+
+var currentAirAcceleration: float  
 var currentGravity: float
 var launchVelocity: float
 var isGrounded: bool
 var isJumping: bool
 var isSprinting: bool
+var waitingToJump: bool = false
 enum moveState {IDLE, WALK, SPRINT, SLIDE, CROUCH, AIR_STRAFE, AIR_IDLE}
 enum jumpState {GROUNDED, RISING, APEX, DESCENDING, FALLING, COYOTE}
 var currentJumpState: int
 var currentMoveState: int
-
+#since this script extends from PlayerState, it also has the variables "p" for player (the player CharacterBody2D), "gravity", and the "stateList" array.
 
 func state_init() -> void:
 	print("initiated")
@@ -48,19 +51,33 @@ func enter() -> void:
 	isGrounded = true
 	currentMoveState = moveState.IDLE
 	currentJumpState = jumpState.GROUNDED
+	
 	coyote_timer.stop()
 	print("enter character")
 	
 func exit() -> void:
+	coyote_timer.stop()
+	currentMoveState = moveState.IDLE
+	currentJumpState = jumpState.GROUNDED
+	#p.velocity = new Vector3(0,0,0)
 	print("exit character")
 	
+	
+	
 func state_process_input(event: InputEvent) -> PlayerState:
-	return null
+	if Input.is_key_pressed(KEY_1):
+		return state_machine.ship_state
+	else: return null
 	
 func state_process(delta: float) -> PlayerState:
 	return null
 	
 func state_physics_process(delta: float) -> PlayerState:
+	if Input.is_action_just_pressed("Ascend") && isGrounded == false:
+		waitingToJump = true
+		start_timer.start(0.2)
+		print("waiting to jump")
+	
 	if p.is_on_floor():
 		isGrounded = true	
 		
@@ -74,8 +91,7 @@ func state_physics_process(delta: float) -> PlayerState:
 	if p.is_on_floor():
 		walk(direction)
 	else:
-		air_strafe(direction)
-		
+		air_strafe(direction)	
 	return null
 
 func walk(direction):
@@ -162,16 +178,17 @@ func jump():
 			airAcceleration * 0.25
 			print("Fast Descent")
 		
-	if Input.is_action_just_pressed("Ascend"):
-		print("try jump")
+	if Input.is_action_just_pressed("Ascend") or waitingToJump == true:
+		print(currentJumpState)
 		if currentJumpState == jumpState.GROUNDED or currentJumpState == jumpState.COYOTE:
 			currentJumpState = jumpState.RISING 
-			p.velocity.y = jumpVelocity #adds upwards velocity
+			p.velocity.y += jumpVelocity #adds upwards velocity
 			coyote_timer.stop()
 			jump_timer.start(riseTime) #starts timer chain
 			currentJumpState = jumpState.RISING #changes to RISING state
 			isJumping = true 
 			isGrounded = false 
+			waitingToJump = false
 			launchVelocity = p.velocity.abs().x
 			print("jump")
 
@@ -190,6 +207,7 @@ func _on_coyote_timer_timeout() -> void:
 	print("coyote over")
 	currentJumpState = jumpState.FALLING
 	
-func test():
-	pass
+func _on_start_timer_timeout() -> void:
+	print("waited too long to jump")
+	waitingToJump = false
 	

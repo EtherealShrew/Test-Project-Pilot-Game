@@ -19,7 +19,7 @@ position = Vector2(-335, 9043)
 position = Vector2(4263, 9712)
 
 [node name="Block4" parent="Node" unique_id=1837513501 instance=ExtResource("2_idj7w")]
-position = Vector2(11791, 8491)
+position = Vector2(11576, 8036)
 
 [node name="Block5" parent="Node" unique_id=91174572 instance=ExtResource("2_idj7w")]
 position = Vector2(19001, 7413)

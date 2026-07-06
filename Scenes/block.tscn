@@ -1,20 +1,20 @@
-[gd_scene load_steps=3 format=3 uid="uid://ctmhphgr3lmwl"]
+[gd_scene format=3 uid="uid://ctmhphgr3lmwl"]
 
 [ext_resource type="Texture2D" uid="uid://c66j87jvrya12" path="res://Assets/BlockTemp.png" id="1_ejx3s"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8o1l4"]
 size = Vector2(6156, 1201)
 
-[node name="Block" type="Node2D"]
+[node name="Block" type="Node2D" unique_id=1974379673]
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=856148969]
 position = Vector2(0.00024414063, 0)
 scale = Vector2(191.99, 37.441)
 texture = ExtResource("1_ejx3s")
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=564798198]
 collision_layer = 5
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1401366076]
 position = Vector2(-6, -1.5)
 shape = SubResource("RectangleShape2D_8o1l4")

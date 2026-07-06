@@ -28,7 +28,7 @@ starting_state = NodePath("Character")
 character_state = NodePath("Character")
 ship_state = NodePath("Ship")
 
-[node name="Character" type="Node" parent="CharacterBody2D/StateMachine" unique_id=535465418 node_paths=PackedStringArray("jump_timer", "coyote_timer", "state_machine", "player_sprite", "wall_slide_right", "wall_slide_left")]
+[node name="Character" type="Node" parent="CharacterBody2D/StateMachine" unique_id=535465418 node_paths=PackedStringArray("jump_timer", "coyote_timer", "start_timer", "state_machine", "player_sprite", "wall_slide_right", "wall_slide_left")]
 script = ExtResource("4_pb3n0")
 walkingSpeed = 2750.0
 sprintSpeed = 4500.0
@@ -47,6 +47,7 @@ coyoteTime = 0.1
 minCoyoteVelocity = 100.0
 jump_timer = NodePath("../../JumpTimer")
 coyote_timer = NodePath("../../CoyoteTimer")
+start_timer = NodePath("../../StartTimer")
 state_machine = NodePath("..")
 player_sprite = NodePath("../../Sprite2D")
 wall_slide_right = NodePath("../../WallSlideR")
@@ -55,11 +56,11 @@ wall_slide_left = NodePath("../../WallSlideL")
 [node name="Ship" type="Node" parent="CharacterBody2D/StateMachine" unique_id=1994336564]
 script = ExtResource("4_ons1q")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=177705442]
+[node name="BodyCollisionSquare" type="CollisionShape2D" parent="CharacterBody2D" unique_id=177705442]
 position = Vector2(-2, -102)
 shape = SubResource("RectangleShape2D_cmdk4")
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="CharacterBody2D" unique_id=869106582]
+[node name="BodyCollisionCircle" type="CollisionShape2D" parent="CharacterBody2D" unique_id=869106582]
 position = Vector2(0, 200)
 scale = Vector2(1, 0.5)
 shape = SubResource("CircleShape2D_cmdk4")
@@ -76,6 +77,10 @@ process_callback = 0
 
 [node name="CoyoteTimer" type="Timer" parent="CharacterBody2D" unique_id=50248046]
 process_callback = 0
+one_shot = true
+
+[node name="StartTimer" type="Timer" parent="CharacterBody2D" unique_id=1921399049]
+wait_time = 0.3
 one_shot = true
 
 [node name="WallSlideR" type="Area2D" parent="CharacterBody2D" unique_id=1371478368]
@@ -98,3 +103,4 @@ debug_color = Color(0.66100144, 0.35112426, 0.51948434, 0.41960785)
 
 [connection signal="timeout" from="CharacterBody2D/JumpTimer" to="CharacterBody2D/StateMachine/Character" method="_on_jump_timer_timeout"]
 [connection signal="timeout" from="CharacterBody2D/CoyoteTimer" to="CharacterBody2D/StateMachine/Character" method="_on_coyote_timer_timeout"]
+[connection signal="timeout" from="CharacterBody2D/StartTimer" to="CharacterBody2D/StateMachine/Character" method="_on_start_timer_timeout"]

@@ -2,9 +2,12 @@
 
 [ext_resource type="Script" uid="uid://pu36a3u1cglv" path="res://Scripts/CharacterController.gd" id="1_cmdk4"]
 [ext_resource type="Texture2D" uid="uid://vev4fm0ac4sl" path="res://Assets/CharacterTemp.png" id="2_cmdk4"]
+[ext_resource type="Script" uid="uid://couw105c3bde4" path="res://addons/godot_state_charts/state_chart.gd" id="2_flf3p"]
 [ext_resource type="Script" uid="uid://f76h0uod81o4" path="res://Scripts/StateMachine.gd" id="2_wko77"]
+[ext_resource type="Script" uid="uid://jk2jm1g6q853" path="res://addons/godot_state_charts/compound_state.gd" id="3_fcng2"]
 [ext_resource type="Script" uid="uid://c7datro7dhdm2" path="res://Scenes/ship_state.gd" id="4_ons1q"]
 [ext_resource type="Script" uid="uid://ydhoxgpbd8n3" path="res://Scenes/character_state.gd" id="4_pb3n0"]
+[ext_resource type="Script" uid="uid://cytafq8i1y8qm" path="res://addons/godot_state_charts/atomic_state.gd" id="4_q5hbr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cmdk4"]
 size = Vector2(780, 594)
@@ -21,6 +24,56 @@ size = Vector2(520, 532.5)
 scale = Vector2(0.5, 1)
 platform_on_leave = 1
 script = ExtResource("1_cmdk4")
+
+[node name="StateChart" type="Node" parent="CharacterBody2D" unique_id=1480533463]
+script = ExtResource("2_flf3p")
+metadata/_custom_type_script = "uid://couw105c3bde4"
+
+[node name="RootState" type="Node" parent="CharacterBody2D/StateChart" unique_id=943702856]
+script = ExtResource("3_fcng2")
+initial_state = NodePath("Grounded")
+
+[node name="Grounded" type="Node" parent="CharacterBody2D/StateChart/RootState" unique_id=645938593]
+script = ExtResource("3_fcng2")
+initial_state = NodePath("Standing")
+
+[node name="Standing" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=552409152]
+script = ExtResource("4_q5hbr")
+
+[node name="Crouching" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=2143876653]
+script = ExtResource("4_q5hbr")
+
+[node name="Sliding" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=737933945]
+script = ExtResource("4_q5hbr")
+
+[node name="WallSliding" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=1252346868]
+script = ExtResource("4_q5hbr")
+
+[node name="Mantling" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=576397061]
+script = ExtResource("4_q5hbr")
+
+[node name="Airborne" type="Node" parent="CharacterBody2D/StateChart/RootState" unique_id=1629268860]
+script = ExtResource("3_fcng2")
+initial_state = NodePath("Falling")
+
+[node name="Jumping" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne" unique_id=313756400]
+script = ExtResource("3_fcng2")
+initial_state = NodePath("Rising")
+
+[node name="Rising" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping" unique_id=619260488]
+script = ExtResource("4_q5hbr")
+
+[node name="Apex" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping" unique_id=357789605]
+script = ExtResource("4_q5hbr")
+
+[node name="Descending" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping" unique_id=1869099276]
+script = ExtResource("4_q5hbr")
+
+[node name="Coyote" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne" unique_id=1388687961]
+script = ExtResource("4_q5hbr")
+
+[node name="Falling" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne" unique_id=2115265092]
+script = ExtResource("4_q5hbr")
 
 [node name="StateMachine" type="Node" parent="CharacterBody2D" unique_id=1290219626 node_paths=PackedStringArray("starting_state", "character_state", "ship_state")]
 script = ExtResource("2_wko77")

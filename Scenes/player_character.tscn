@@ -1,13 +1,11 @@
 [gd_scene format=3 uid="uid://c2861fx0yjmce"]
 
-[ext_resource type="Script" uid="uid://pu36a3u1cglv" path="res://Scripts/CharacterController.gd" id="1_cmdk4"]
+[ext_resource type="Script" uid="uid://dtsbps3g0pfl0" path="res://Scenes/CharacterMovementController.gd" id="1_flf3p"]
 [ext_resource type="Texture2D" uid="uid://vev4fm0ac4sl" path="res://Assets/CharacterTemp.png" id="2_cmdk4"]
 [ext_resource type="Script" uid="uid://couw105c3bde4" path="res://addons/godot_state_charts/state_chart.gd" id="2_flf3p"]
-[ext_resource type="Script" uid="uid://f76h0uod81o4" path="res://Scripts/StateMachine.gd" id="2_wko77"]
 [ext_resource type="Script" uid="uid://jk2jm1g6q853" path="res://addons/godot_state_charts/compound_state.gd" id="3_fcng2"]
-[ext_resource type="Script" uid="uid://c7datro7dhdm2" path="res://Scenes/ship_state.gd" id="4_ons1q"]
-[ext_resource type="Script" uid="uid://ydhoxgpbd8n3" path="res://Scenes/character_state.gd" id="4_pb3n0"]
 [ext_resource type="Script" uid="uid://cytafq8i1y8qm" path="res://addons/godot_state_charts/atomic_state.gd" id="4_q5hbr"]
+[ext_resource type="Script" uid="uid://cf1nsco3w0mf6" path="res://addons/godot_state_charts/transition.gd" id="5_fcng2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cmdk4"]
 size = Vector2(780, 594)
@@ -20,13 +18,42 @@ size = Vector2(520, 532.5)
 
 [node name="PlayerCharacter" type="Node2D" unique_id=1503002898]
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=514324982]
+[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=514324982 node_paths=PackedStringArray("jump_timer", "coyote_timer", "start_timer", "wall_slide_timer", "state_machine", "player_sprite", "wall_slide_right", "wall_slide_left")]
 scale = Vector2(0.5, 1)
 platform_on_leave = 1
-script = ExtResource("1_cmdk4")
+script = ExtResource("1_flf3p")
+walkingSpeed = 2750.0
+sprintSpeed = 4500.0
+airSpeed = 2750.0
+sprintAirSpeed = 4500.0
+jumpVelocity = -4500.0
+baseGravity = 8.0
+apexGravity = 5.0
+fallGravity = 20.0
+wall_slide_gravity = 3.0
+wall_slide_terminal_velocity = 8000.0
+current_terminal_velocity = 20000.0
+base_terminal_velocity = 20000.0
+walkingAcceleration = 350.0
+sprintingAcceleration = 650.0
+airAcceleration = 200.0
+riseTime = 0.45
+apexTime = 0.25
+coyoteTime = 0.1
+minCoyoteVelocity = 100.0
+jump_timer = NodePath("JumpTimer")
+coyote_timer = NodePath("CoyoteTimer")
+start_timer = NodePath("StartTimer")
+wall_slide_timer = NodePath("WallSlideTimer")
+state_machine = NodePath("WallSlideTimer")
+player_sprite = NodePath("Sprite2D")
+wall_slide_right = NodePath("WallSlideR")
+wall_slide_left = NodePath("WallSlideL")
+wall_slide_time = 1.0
 
 [node name="StateChart" type="Node" parent="CharacterBody2D" unique_id=1480533463]
 script = ExtResource("2_flf3p")
+track_in_editor = true
 metadata/_custom_type_script = "uid://couw105c3bde4"
 
 [node name="RootState" type="Node" parent="CharacterBody2D/StateChart" unique_id=943702856]
@@ -40,13 +67,38 @@ initial_state = NodePath("Standing")
 [node name="Standing" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=552409152]
 script = ExtResource("4_q5hbr")
 
+[node name="StartCrouching" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded/Standing" unique_id=1773959319]
+script = ExtResource("5_fcng2")
+to = NodePath("../../Crouching")
+event = &"start_crouching"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="StartCoyote" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded/Standing" unique_id=165427315]
+script = ExtResource("5_fcng2")
+to = NodePath("../../../Airborne/Coyote")
+event = &"start_coyote"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="StartJumping" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded/Standing" unique_id=401222229]
+script = ExtResource("5_fcng2")
+to = NodePath("../../../Airborne/Jumping/Rising")
+event = &"start_jumping"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="StartSliding" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded/Standing" unique_id=1645996490]
+script = ExtResource("5_fcng2")
+to = NodePath("../../Sliding")
+event = &"start_sliding"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
 [node name="Crouching" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=2143876653]
 script = ExtResource("4_q5hbr")
 
 [node name="Sliding" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=737933945]
-script = ExtResource("4_q5hbr")
-
-[node name="WallSliding" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=1252346868]
 script = ExtResource("4_q5hbr")
 
 [node name="Mantling" type="Node" parent="CharacterBody2D/StateChart/RootState/Grounded" unique_id=576397061]
@@ -56,6 +108,40 @@ script = ExtResource("4_q5hbr")
 script = ExtResource("3_fcng2")
 initial_state = NodePath("Falling")
 
+[node name="Coyote" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne" unique_id=1388687961]
+script = ExtResource("4_q5hbr")
+
+[node name="StartFalling" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Coyote" unique_id=20368899]
+script = ExtResource("5_fcng2")
+to = NodePath("../../Falling")
+event = &"start_falling"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="StartJumping" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Coyote" unique_id=1938407888]
+script = ExtResource("5_fcng2")
+to = NodePath("../../Jumping/Rising")
+event = &"start_jumping"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="Falling" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne" unique_id=2115265092]
+script = ExtResource("4_q5hbr")
+
+[node name="StartStanding" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Falling" unique_id=102634282]
+script = ExtResource("5_fcng2")
+to = NodePath("../../../Grounded/Standing")
+event = &"start_standing"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="StartWallSliding" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Falling" unique_id=969593073]
+script = ExtResource("5_fcng2")
+to = NodePath("../../WallSliding")
+event = &"start_wall_sliding"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
 [node name="Jumping" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne" unique_id=313756400]
 script = ExtResource("3_fcng2")
 initial_state = NodePath("Rising")
@@ -63,51 +149,94 @@ initial_state = NodePath("Rising")
 [node name="Rising" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping" unique_id=619260488]
 script = ExtResource("4_q5hbr")
 
+[node name="ProgressJump" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Rising" unique_id=2073402076]
+script = ExtResource("5_fcng2")
+to = NodePath("../../Apex")
+event = &"progress_jump"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="StartStanding" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Rising" unique_id=903448775]
+script = ExtResource("5_fcng2")
+to = NodePath("../../../../Grounded/Standing")
+event = &"start_standing"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
 [node name="Apex" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping" unique_id=357789605]
 script = ExtResource("4_q5hbr")
+
+[node name="ProgressJump" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Apex" unique_id=134482676]
+script = ExtResource("5_fcng2")
+to = NodePath("../../Descending")
+event = &"progress_jump"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="StartStanding" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Apex" unique_id=1428128970]
+script = ExtResource("5_fcng2")
+to = NodePath("../../../../Grounded/Standing")
+event = &"start_standing"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
 [node name="Descending" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping" unique_id=1869099276]
 script = ExtResource("4_q5hbr")
 
-[node name="Coyote" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne" unique_id=1388687961]
+[node name="ProgressJump" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Descending" unique_id=965393415]
+script = ExtResource("5_fcng2")
+to = NodePath("../../../Falling")
+event = &"progress_jump"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="StartStanding" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Descending" unique_id=2019501775]
+script = ExtResource("5_fcng2")
+to = NodePath("../../../../Grounded/Standing")
+event = &"start_standing"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="WallJump" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping" unique_id=465276074]
+script = ExtResource("4_q5hbr")
+metadata/_custom_type_script = "uid://cytafq8i1y8qm"
+
+[node name="ProgressJump" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/Jumping" unique_id=173594002]
+script = ExtResource("5_fcng2")
+to = NodePath("../../WallSliding")
+event = &"start_wall_sliding"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="WallSliding" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne" unique_id=1252346868]
 script = ExtResource("4_q5hbr")
 
-[node name="Falling" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne" unique_id=2115265092]
-script = ExtResource("4_q5hbr")
+[node name="StartFalling" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/WallSliding" unique_id=266697173]
+script = ExtResource("5_fcng2")
+to = NodePath("../../Falling")
+event = &"start_falling"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
-[node name="StateMachine" type="Node" parent="CharacterBody2D" unique_id=1290219626 node_paths=PackedStringArray("starting_state", "character_state", "ship_state")]
-script = ExtResource("2_wko77")
-starting_state = NodePath("Character")
-character_state = NodePath("Character")
-ship_state = NodePath("Ship")
+[node name="StartStanding" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/WallSliding" unique_id=1734291756]
+script = ExtResource("5_fcng2")
+to = NodePath("../../../Grounded/Standing")
+event = &"start_standing"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
-[node name="Character" type="Node" parent="CharacterBody2D/StateMachine" unique_id=535465418 node_paths=PackedStringArray("jump_timer", "coyote_timer", "start_timer", "state_machine", "player_sprite", "wall_slide_right", "wall_slide_left")]
-script = ExtResource("4_pb3n0")
-walkingSpeed = 2750.0
-sprintSpeed = 4500.0
-airSpeed = 2750.0
-sprintAirSpeed = 4500.0
-jumpVelocity = -4000.0
-baseGravity = 8.0
-apexGravity = 5.0
-fallGravity = 20.0
-walkingAcceleration = 350.0
-sprintingAcceleration = 650.0
-airAcceleration = 200.0
-riseTime = 0.45
-apexTime = 0.25
-coyoteTime = 0.1
-minCoyoteVelocity = 100.0
-jump_timer = NodePath("../../JumpTimer")
-coyote_timer = NodePath("../../CoyoteTimer")
-start_timer = NodePath("../../StartTimer")
-state_machine = NodePath("..")
-player_sprite = NodePath("../../Sprite2D")
-wall_slide_right = NodePath("../../WallSlideR")
-wall_slide_left = NodePath("../../WallSlideL")
+[node name="StartJumping" type="Node" parent="CharacterBody2D/StateChart/RootState/Airborne/WallSliding" unique_id=1056475501]
+script = ExtResource("5_fcng2")
+to = NodePath("../../Jumping/Rising")
+event = &"start_jumping"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="StateMachine" type="Node" parent="CharacterBody2D" unique_id=1290219626]
+
+[node name="Character" type="Node" parent="CharacterBody2D/StateMachine" unique_id=535465418]
 
 [node name="Ship" type="Node" parent="CharacterBody2D/StateMachine" unique_id=1994336564]
-script = ExtResource("4_ons1q")
 
 [node name="BodyCollisionSquare" type="CollisionShape2D" parent="CharacterBody2D" unique_id=177705442]
 position = Vector2(-2, -102)
@@ -136,14 +265,17 @@ one_shot = true
 wait_time = 0.3
 one_shot = true
 
+[node name="WallSlideTimer" type="Timer" parent="CharacterBody2D" unique_id=1285640824]
+one_shot = true
+
 [node name="WallSlideR" type="Area2D" parent="CharacterBody2D" unique_id=1371478368]
-collision_layer = 0
+collision_layer = 256
 collision_mask = 4
 
 [node name="WallSlideCollisionR" type="CollisionShape2D" parent="CharacterBody2D/WallSlideR" unique_id=1776852770]
 position = Vector2(260, -0.5)
 shape = SubResource("RectangleShape2D_pb3n0")
-debug_color = Color(0.8303257, 0.5441133, 0.69206786, 0.41960785)
+debug_color = Color(3.7541986e-06, 0.7462275, 0.68995625, 0.41960785)
 
 [node name="WallSlideL" type="Area2D" parent="CharacterBody2D" unique_id=547988925]
 collision_layer = 0
@@ -154,6 +286,37 @@ position = Vector2(-260, 0.25)
 shape = SubResource("RectangleShape2D_pb3n0")
 debug_color = Color(0.66100144, 0.35112426, 0.51948434, 0.41960785)
 
+[connection signal="state_entered" from="CharacterBody2D/StateChart/RootState/Grounded" to="CharacterBody2D" method="_on_grounded_state_entered"]
+[connection signal="state_entered" from="CharacterBody2D/StateChart/RootState/Grounded/Standing" to="CharacterBody2D" method="_on_standing_state_entered"]
+[connection signal="state_exited" from="CharacterBody2D/StateChart/RootState/Grounded/Standing" to="CharacterBody2D" method="_on_standing_state_exited"]
+[connection signal="state_input" from="CharacterBody2D/StateChart/RootState/Grounded/Standing" to="CharacterBody2D" method="_on_standing_state_input"]
+[connection signal="state_physics_processing" from="CharacterBody2D/StateChart/RootState/Grounded/Standing" to="CharacterBody2D" method="_on_standing_state_physics_processing"]
+[connection signal="state_physics_processing" from="CharacterBody2D/StateChart/RootState/Airborne" to="CharacterBody2D" method="_on_airborne_state_physics_processing"]
+[connection signal="state_entered" from="CharacterBody2D/StateChart/RootState/Airborne/Coyote" to="CharacterBody2D" method="_on_coyote_state_entered"]
+[connection signal="state_exited" from="CharacterBody2D/StateChart/RootState/Airborne/Coyote" to="CharacterBody2D" method="_on_coyote_state_exited"]
+[connection signal="state_input" from="CharacterBody2D/StateChart/RootState/Airborne/Coyote" to="CharacterBody2D" method="_on_coyote_state_input"]
+[connection signal="state_entered" from="CharacterBody2D/StateChart/RootState/Airborne/Falling" to="CharacterBody2D" method="_on_falling_state_entered"]
+[connection signal="state_input" from="CharacterBody2D/StateChart/RootState/Airborne/Falling" to="CharacterBody2D" method="_on_falling_state_input"]
+[connection signal="state_physics_processing" from="CharacterBody2D/StateChart/RootState/Airborne/Falling" to="CharacterBody2D" method="_on_falling_state_physics_processing"]
+[connection signal="state_physics_processing" from="CharacterBody2D/StateChart/RootState/Airborne/Jumping" to="CharacterBody2D" method="_on_jumping_state_physics_processing"]
+[connection signal="state_entered" from="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Rising" to="CharacterBody2D" method="_on_rising_state_entered"]
+[connection signal="state_physics_processing" from="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Rising" to="CharacterBody2D" method="_on_rising_state_physics_processing"]
+[connection signal="state_entered" from="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Apex" to="CharacterBody2D" method="_on_apex_state_entered"]
+[connection signal="state_physics_processing" from="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Apex" to="CharacterBody2D" method="_on_apex_state_physics_processing"]
+[connection signal="state_entered" from="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Descending" to="CharacterBody2D" method="_on_descending_state_entered"]
+[connection signal="state_physics_processing" from="CharacterBody2D/StateChart/RootState/Airborne/Jumping/Descending" to="CharacterBody2D" method="_on_descending_state_physics_processing"]
+[connection signal="state_entered" from="CharacterBody2D/StateChart/RootState/Airborne/WallSliding" to="CharacterBody2D" method="_on_wall_sliding_state_entered"]
+[connection signal="state_exited" from="CharacterBody2D/StateChart/RootState/Airborne/WallSliding" to="CharacterBody2D" method="_on_wall_sliding_state_exited"]
+[connection signal="state_input" from="CharacterBody2D/StateChart/RootState/Airborne/WallSliding" to="CharacterBody2D" method="_on_wall_sliding_state_input"]
+[connection signal="state_physics_processing" from="CharacterBody2D/StateChart/RootState/Airborne/WallSliding" to="CharacterBody2D" method="_on_wall_sliding_state_physics_processing"]
+[connection signal="timeout" from="CharacterBody2D/JumpTimer" to="CharacterBody2D" method="_on_jump_timer_timeout"]
 [connection signal="timeout" from="CharacterBody2D/JumpTimer" to="CharacterBody2D/StateMachine/Character" method="_on_jump_timer_timeout"]
+[connection signal="timeout" from="CharacterBody2D/CoyoteTimer" to="CharacterBody2D" method="_on_coyote_timer_timeout"]
 [connection signal="timeout" from="CharacterBody2D/CoyoteTimer" to="CharacterBody2D/StateMachine/Character" method="_on_coyote_timer_timeout"]
 [connection signal="timeout" from="CharacterBody2D/StartTimer" to="CharacterBody2D/StateMachine/Character" method="_on_start_timer_timeout"]
+[connection signal="body_entered" from="CharacterBody2D/WallSlideR" to="CharacterBody2D" method="_on_wall_slide_r_body_entered"]
+[connection signal="body_exited" from="CharacterBody2D/WallSlideR" to="CharacterBody2D" method="_on_wall_slide_r_body_exited"]
+[connection signal="area_entered" from="CharacterBody2D/WallSlideL" to="CharacterBody2D" method="_on_wall_slide_l_area_entered"]
+[connection signal="area_exited" from="CharacterBody2D/WallSlideL" to="CharacterBody2D" method="_on_wall_slide_l_area_exited"]
+[connection signal="body_entered" from="CharacterBody2D/WallSlideL" to="CharacterBody2D" method="_on_wall_slide_l_body_entered"]
+[connection signal="body_exited" from="CharacterBody2D/WallSlideL" to="CharacterBody2D" method="_on_wall_slide_l_body_exited"]

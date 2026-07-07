@@ -40,7 +40,7 @@ enum moveState {IDLE, WALK, SPRINT, SLIDE, CROUCH, AIR_STRAFE, AIR_IDLE}
 enum jumpState {GROUNDED, RISING, APEX, DESCENDING, FALLING, COYOTE}
 var currentJumpState: int
 var currentMoveState: int
-#since this script extends from PlayerState, it also has the variables "p" for player (the player CharacterBody2D), "gravity", and the "stateList" array.
+#since this script extends from PlayerState, it also has the variables "p" for player (the player CharacterBody2D), and "gravity"
 
 func state_init() -> void:
 	print("initiated")

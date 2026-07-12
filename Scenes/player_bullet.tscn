@@ -1,40 +1,23 @@
-[gd_scene load_steps=4 format=3 uid="uid://bb0v7lr0pox3m"]
+[gd_scene format=3 uid="uid://dndcn1v32xqql"]
 
-[ext_resource type="Script" uid="uid://b84sfhgax85l6" path="res://Scripts/PlayerBulletController.gd" id="1_3m2mg"]
-[ext_resource type="Texture2D" uid="uid://biftyr3fqe7e3" path="res://Assets/BulletTemp.png" id="1_bg8x2"]
+[ext_resource type="Script" uid="uid://dg73w3jqp4kmb" path="res://Scenes/player_bullet.gd" id="1_3m2mg"]
+[ext_resource type="Texture2D" uid="uid://yhfi8ksq2o0b" path="res://Assets/bullet.png" id="1_v7oki"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_bg8x2"]
-size = Vector2(1200.0001, 1200.0001)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pdbtw"]
+radius = 11.0
+height = 68.0
 
-[node name="PlayerBullet" type="CharacterBody2D"]
-position = Vector2(2, 1)
-scale = Vector2(0.25, 0.25)
-collision_layer = 4
-collision_mask = 2
+[node name="PlayerBullet" type="Node2D" unique_id=588892430]
 script = ExtResource("1_3m2mg")
-bulletSpeed = 100000.0
-terminalVelocity = 25000.0
-gravity = 500.0
+SPEED = 250
 
-[node name="Node2D" type="Area2D" parent="."]
-collision_layer = 2
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=971739017]
+position = Vector2(1.9999999, 0)
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("1_v7oki")
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="Node2D"]
-scale = Vector2(0.9999998, 0.9999998)
-shape = SubResource("RectangleShape2D_bg8x2")
+[node name="Area2D" type="Area2D" parent="." unique_id=263028780]
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-visible = false
-scale = Vector2(200, 200)
-texture = ExtResource("1_bg8x2")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-scale = Vector2(0.9999998, 0.9999998)
-shape = SubResource("RectangleShape2D_bg8x2")
-
-[node name="Timer" type="Timer" parent="."]
-wait_time = 0.25
-one_shot = true
-autostart = true
-
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1343476509]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_pdbtw")

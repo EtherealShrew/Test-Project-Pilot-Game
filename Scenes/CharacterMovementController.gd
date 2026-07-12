@@ -24,7 +24,7 @@ extends CharacterBody2D
 @export var coyote_timer: Timer 
 @export var start_timer: Timer 
 @export var wall_slide_timer: Timer 
-@export var state_machine: Node
+@export var wall_jump_timer: Timer 
 @export var player_sprite: Sprite2D
 @export var wall_slide_right: Area2D
 @export var wall_slide_left: Area2D
@@ -69,9 +69,6 @@ func run_gravity(delta: float) -> void:
 	velocity.y += get_gravity().y * delta * currentGravity
 	if velocity.abs().y >+ current_terminal_velocity:
 		velocity.y = move_toward(velocity.y, current_terminal_velocity, velocity.abs().y)
-		
-	print(velocity.abs().y)
-	
 
 func _on_grounded_state_entered() -> void:
 	pass
@@ -143,6 +140,11 @@ func _on_coyote_timer_timeout() -> void:
 	state_chart.send_event("start_falling")
 
 
+func _on_coyote_state_processing(delta: float) -> void:
+	if is_on_floor():
+		state_chart.send_event("start_standing")
+
+
 func _on_coyote_state_input(event: InputEvent) -> void:
 	if Input.is_action_pressed("Crouch"):
 		state_chart.send_event("start_falling")
@@ -187,16 +189,13 @@ func _on_falling_state_physics_processing(delta: float) -> void:
 	run_gravity(delta)
 
 func _on_jumping_state_physics_processing(delta: float) -> void:
-	velocity.x = move_toward(velocity.x, x_direction * airSpeed*1.1 * clamp(launchVelocity / walkingSpeed, 0.8, 2), currentAirAcceleration)
+	if wall_jump_timer.is_stopped() == true:
+		velocity.x = move_toward(velocity.x, x_direction * airSpeed*1.1 * clamp(launchVelocity / walkingSpeed, 0.8, 2), currentAirAcceleration)
+	else:
+		velocity.x = move_toward(velocity.x, x_direction * airSpeed*1.1 * clamp(launchVelocity / walkingSpeed, 0.8, 2), currentAirAcceleration/6)
 	current_terminal_velocity = base_terminal_velocity
-	print(launchVelocity)
 	if is_on_floor():
 		state_chart.send_event("start_standing")
-	if slideControl.get("WallCollision") == true:
-		if slideControl.get("RightCollision") == true && x_direction == 1 && wall_slide_timer.is_stopped() == true:
-			state_chart.send_event("start_wall_sliding")
-		if slideControl.get("LeftCollision") == true && x_direction == -1 && wall_slide_timer.is_stopped() == true:
-			state_chart.send_event("start_wall_sliding")
 	
 	run_gravity(delta)
 		
@@ -210,7 +209,6 @@ func _on_rising_state_entered() -> void:
 	launchVelocity = velocity.abs().x
 	if launchVelocity < 1:
 		launchVelocity = 1
-
 	currentGravity = baseGravity
 	player_sprite.self_modulate = Color(0.933, 0.758, 0.0, 1.0)
 	jump_timer.start(riseTime)
@@ -228,7 +226,11 @@ func _on_apex_state_entered() -> void:
 
 
 func _on_apex_state_physics_processing(delta: float) -> void:
-	pass # Replace with function body.
+	if slideControl.get("WallCollision") == true:
+		if slideControl.get("RightCollision") == true && x_direction == 1 && wall_slide_timer.is_stopped() == true:
+			state_chart.send_event("start_wall_sliding")
+		if slideControl.get("LeftCollision") == true && x_direction == -1 && wall_slide_timer.is_stopped() == true:
+			state_chart.send_event("start_wall_sliding")
 
 
 func _on_descending_state_entered() -> void:
@@ -239,7 +241,11 @@ func _on_descending_state_entered() -> void:
 
 
 func _on_descending_state_physics_processing(delta: float) -> void:
-	pass
+	if slideControl.get("WallCollision") == true:
+		if slideControl.get("RightCollision") == true && x_direction == 1 && wall_slide_timer.is_stopped() == true:
+			state_chart.send_event("start_wall_sliding")
+		if slideControl.get("LeftCollision") == true && x_direction == -1 && wall_slide_timer.is_stopped() == true:
+			state_chart.send_event("start_wall_sliding")
 	
 
 
@@ -255,7 +261,9 @@ func _on_wall_sliding_state_entered() -> void:
 		slideControl.set("WallCollision", false)
 		print("neither works")
 	currentGravity = wall_slide_gravity
-	player_sprite.self_modulate = Color(1.0, 1.0, 1.0, 1.0)
+	player_sprite.self_modulate = Color(0.0, 0.649, 0.649, 1.0)
+	wall_jump_timer.stop()
+	wall_slide_timer.stop()
 
 
 func _on_wall_sliding_state_input(event: InputEvent) -> void:
@@ -280,9 +288,10 @@ func _on_wall_sliding_state_physics_processing(delta: float) -> void:
 		print("landed after wallslide")
 		state_chart.send_event("start_standing")
 	run_gravity(delta)
-	if Input.is_action_pressed("Ascend"):
+	if Input.is_action_just_pressed("Ascend"):
 		velocity.y = 0
 		wall_slide_timer.start(wall_slide_time)
+		wall_jump_timer.start(0.35)
 		if slideControl.get("CurrentSlideDirection") == "Right":
 			velocity.x = jumpVelocity/2
 			print("jump right")
@@ -296,7 +305,7 @@ func _on_wall_sliding_state_physics_processing(delta: float) -> void:
 
 
 func _on_wall_sliding_state_exited() -> void:
-	pass 
+	pass
 
 func _on_wall_slide_r_body_entered(body: Node2D) -> void:
 	slideControl.set("RightCollision", true)
